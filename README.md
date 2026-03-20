@@ -8,6 +8,87 @@ a comprehensive and easy-to-use platform for monitoring spacecraft, controlling 
 live radio signals from satellites.
 This project was built with the help of Claude Code and Codex.
 
+## Quick Start
+
+### Prerequisites
+
+*   **Python 3.8+** (recommended: 3.10+)
+*   **Node.js 14+** (recommended: 18+)
+*   **Git**
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/sgoudelis/ground-station.git
+cd ground-station
+```
+
+### 2. Backend Setup
+
+```bash
+cd backend
+
+# Create and activate virtual environment
+python -m venv venv
+
+# Activate on Linux/macOS:
+source venv/bin/activate
+
+# Activate on Windows (PowerShell):
+.\venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the backend server
+python app.py --host 0.0.0.0 --port 5000
+```
+
+### 3. Frontend Setup (in a new terminal)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 4. Open the app
+
+Open your browser and go to **http://localhost:5173**
+
+The frontend dev server automatically proxies API requests to the backend at `localhost:5000`.
+
+### Platform Notes
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+-   If `pip install -r requirements.txt` fails on `netifaces`, install `netifaces2` as a replacement:
+    ```bash
+    pip install netifaces2
+    ```
+    Then re-run the install excluding `netifaces`:
+    ```powershell
+    Get-Content requirements.txt | Where-Object { $_ -notmatch '^netifaces==' -and $_.Trim() -ne '' } | Set-Content requirements-temp.txt
+    pip install -r requirements-temp.txt
+    Remove-Item requirements-temp.txt
+    ```
+-   GNU Radio decoders (FSK, GMSK, BPSK, AFSK, LoRa) are **not available** on Windows without GNU Radio installed. Core features (satellite tracking, TLE sync, SDR streaming via TCP) still work.
+-   If you see a `UnicodeEncodeError` when starting the backend, set `PYTHONIOENCODING=utf-8` before running.
+
+</details>
+
+<details>
+<summary><strong>Linux</strong></summary>
+
+-   All features work out of the box.
+-   For LoRa decoding, you need to build [GNU Radio](https://wiki.gnuradio.org/index.php/InstallingGR) and [gr-lora_sdr](https://github.com/tapparelj/gr-lora_sdr) from source. See `DEVELOPMENT.md` for detailed instructions.
+-   For RTL-SDR USB access, install `librtlsdr-dev` and ensure your user is in the `plugdev` group.
+
+</details>
+
+> **Note:** For production deployment or Docker-based setup, see the [Docker](#docker) section below.
+
 ## Screenshots
 
 <div align="center">
