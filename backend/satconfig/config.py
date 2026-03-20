@@ -14,7 +14,10 @@ import logging
 import pathlib
 from typing import Any, Dict, Optional
 
-from satellites.satyaml.satyaml import SatYAML
+try:
+    from satellites.satyaml.satyaml import SatYAML
+except ImportError:
+    SatYAML = None
 
 from constants import GR_SATELLITES_FRAMING_MAP, FramingType
 
@@ -48,6 +51,8 @@ class SatelliteConfigService:
 
         # Initialize gr-satellites YAML parser
         try:
+            if SatYAML is None:
+                raise ImportError("gr-satellites not installed")
             self.satyaml = SatYAML()
             logger.info(
                 f"Loaded gr-satellites database with {len(list(self.satyaml.yaml_files()))} satellites"

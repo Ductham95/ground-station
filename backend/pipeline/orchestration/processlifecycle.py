@@ -27,11 +27,30 @@ from fft.processor import fft_processor_process
 from handlers.entities.filebrowser import emit_file_browser_state
 from pipeline.streaming.iqbroadcaster import IQBroadcaster
 from vfos.state import VFOManager
-from workers.rtlsdrworker import rtlsdr_worker_process
-from workers.sigmfplaybackworker import sigmf_playback_worker_process
-from workers.soapysdrlocalworker import soapysdr_local_worker_process
-from workers.soapysdrremoteworker import soapysdr_remote_worker_process
-from workers.uhdworker import uhd_worker_process
+try:
+    from workers.rtlsdrworker import rtlsdr_worker_process
+except ImportError:
+    rtlsdr_worker_process = None
+
+try:
+    from workers.sigmfplaybackworker import sigmf_playback_worker_process
+except ImportError:
+    sigmf_playback_worker_process = None
+
+try:
+    from workers.soapysdrlocalworker import soapysdr_local_worker_process
+except ImportError:
+    soapysdr_local_worker_process = None
+
+try:
+    from workers.soapysdrremoteworker import soapysdr_remote_worker_process
+except ImportError:
+    soapysdr_remote_worker_process = None
+
+try:
+    from workers.uhdworker import uhd_worker_process
+except ImportError:
+    uhd_worker_process = None
 
 # Add setproctitle import for process naming
 try:

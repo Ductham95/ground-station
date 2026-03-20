@@ -17,15 +17,58 @@
 from dataclasses import dataclass
 from typing import List, Optional, Type
 
-# Import decoder classes
-from demodulators.afskdecoder import AFSKDecoder
-from demodulators.bpskdecoder import BPSKDecoder
-from demodulators.fskdecoder import FSKDecoder
-from demodulators.gfskdecoder import GFSKDecoder
-from demodulators.gmskdecoder import GMSKDecoder
-from demodulators.loradecoder import LoRaDecoder
-from demodulators.morsedecoder import MorseDecoder
-from demodulators.sstvdecoder import SSTVDecoder
+# Import decoder classes - these require GNU Radio, so import conditionally
+import logging
+
+_decoder_registry_logger = logging.getLogger("decoder-registry")
+
+try:
+    from demodulators.afskdecoder import AFSKDecoder
+except ImportError:
+    AFSKDecoder = None
+    _decoder_registry_logger.warning("AFSKDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.bpskdecoder import BPSKDecoder
+except ImportError:
+    BPSKDecoder = None
+    _decoder_registry_logger.warning("BPSKDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.fskdecoder import FSKDecoder
+except ImportError:
+    FSKDecoder = None
+    _decoder_registry_logger.warning("FSKDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.gfskdecoder import GFSKDecoder
+except ImportError:
+    GFSKDecoder = None
+    _decoder_registry_logger.warning("GFSKDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.gmskdecoder import GMSKDecoder
+except ImportError:
+    GMSKDecoder = None
+    _decoder_registry_logger.warning("GMSKDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.loradecoder import LoRaDecoder
+except ImportError:
+    LoRaDecoder = None
+    _decoder_registry_logger.warning("LoRaDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.morsedecoder import MorseDecoder
+except ImportError:
+    MorseDecoder = None
+    _decoder_registry_logger.warning("MorseDecoder not available (GNU Radio not installed)")
+
+try:
+    from demodulators.sstvdecoder import SSTVDecoder
+except ImportError:
+    SSTVDecoder = None
+    _decoder_registry_logger.warning("SSTVDecoder not available (GNU Radio not installed)")
 
 
 @dataclass
@@ -164,6 +207,12 @@ class DecoderRegistry:
                 description="LoRa chirp spread spectrum decoder",
             ),
         }
+
+        # Filter out decoders whose classes couldn't be imported
+        unavailable = [name for name, caps in self._decoders.items() if caps.decoder_class is None]
+        for name in unavailable:
+            del self._decoders[name]
+            _decoder_registry_logger.info(f"Decoder '{name}' removed from registry (not available)")
 
         self._initialized = True
 
